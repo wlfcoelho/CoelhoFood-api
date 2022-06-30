@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.algaworks.coelhofood.domain.model.Estado;
 import com.algaworks.coelhofood.domain.repository.EstadoRepository;
 
-@RequestMapping
-@RestController("/v1/estados")
+@RequestMapping ("/v1/estados")
+@RestController
 public class EstadoController {
 
 	@Autowired
