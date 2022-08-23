@@ -4,10 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.algaworks.coelhofood.domain.exception.EntidadeEmUsoException;
 import com.algaworks.coelhofood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.coelhofood.domain.model.Cozinha;
-import com.algaworks.coelhofood.domain.model.CozinhaXmlWrapper;
 import com.algaworks.coelhofood.domain.repository.CozinhaRepository;
 import com.algaworks.coelhofood.domain.service.CadastroCozinhaService;
 
@@ -41,12 +38,6 @@ public class CozinhaController {
 		return cozinhaRepository.listar();
 	}
 	
-	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
-	public CozinhaXmlWrapper listarXml() {
-		return new CozinhaXmlWrapper(cozinhaRepository.listar());
-		
-	}
-	
 	@GetMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> buscar(@PathVariable Long cozinhaId){
 		Cozinha cozinha = cozinhaRepository.buscar(cozinhaId);
@@ -55,7 +46,7 @@ public class CozinhaController {
 		
 		
 		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.LOCATION, "http://api.coelhofood.local:8080/cozinhas");
+		headers.add(HttpHeaders.LOCATION, "http://api.coelhofood.local:8080/v1/cozinhas");
 		if (cozinha != null) {
 		
 			return ResponseEntity.ok(cozinha);	
@@ -81,7 +72,7 @@ public class CozinhaController {
 			@RequestBody Cozinha cozinha) {
 		Cozinha cozinhaAtual = cozinhaRepository.buscar(cozinhaId);
 		
-		if(cozinhaAtual != null) {
+		if(cozinhaAtual != null) {	
 			//cozinhaAtual.setNome(cozinha.getNome());
 			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
 			
