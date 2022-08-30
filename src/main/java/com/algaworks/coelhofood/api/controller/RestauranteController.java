@@ -63,7 +63,7 @@ public class RestauranteController {
 		}
 	}
 
-	@PutMapping
+	@PutMapping("/{restauranteId}")
 	public ResponseEntity<?> atualizar(@PathVariable Long restauranteId, @RequestBody Restaurante restaurante) {
 
 		try {
