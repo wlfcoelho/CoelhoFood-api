@@ -1,5 +1,7 @@
 package com.algaworks.coelhofood.domain.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,21 +25,21 @@ public class CadastroCidadeService {
 	
 	public Cidade salvar(Cidade cidade) throws EntidadeNaoEncontradaException {
 		Long estadoId = cidade.getEstado().getId();
-		Estado estado = estadoRepository.buscar(estadoId);
+		Optional <Estado> estado = estadoRepository.findById(estadoId);
 		
 		if (estado == null) {
 			throw new EntidadeNaoEncontradaException(
 					String.format("Não existe cadastro para o estado com o código %d", estadoId));
 		}
-		cidade.setEstado(estado);
+		cidade.setEstado(estado.get());
 		
-		return cidadeRepository.salvar(cidade);
+		return cidadeRepository.save(cidade);
 	}
 	
 	public void excluir (Long cidadeId) throws EntidadeEmUsoException, EntidadeNaoEncontradaException{
 		try {
 			
-			cidadeRepository.remover(cidadeId);
+			cidadeRepository.deleteById(cidadeId);
 			
 		} catch (EmptyResultDataAccessException e) {
 			throw new EntidadeEmUsoException(
