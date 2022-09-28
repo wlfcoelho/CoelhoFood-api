@@ -22,7 +22,7 @@ public class RestauranteComNomeSemelhanteSpec implements Specification<Restauran
 	public Predicate toPredicate(Root<Restaurante> root, CriteriaQuery<?> query, 
 					CriteriaBuilder builder) {
 		
-		return builder.equal(root.get("nome"), "%" + nome + "%");
+		return builder.like(root.get("nome"), "%" + nome + "%");
 	}
 
 }
