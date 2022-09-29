@@ -1,8 +1,5 @@
 package com.algaworks.coelhofood.api.controller;
 
-import static com.algaworks.coelhofood.infrastructure.repository.spec.RestauranteSpecs.comFreteGratis;
-import static com.algaworks.coelhofood.infrastructure.repository.spec.RestauranteSpecs.comNomeSemelhante;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +37,12 @@ public class TesteController {
 	@GetMapping("/cozinhas/exists")
 	public boolean cozinhaExists(String nome) {
 		return cozinhaRepository.existsByNome(nome);
+	}
+	
+	@GetMapping("/cozinhas/primeiro")
+	public Optional<Cozinha> cozinhaPrimeiro() {
+		
+		return cozinhaRepository.buscarPrimeiro();
 	}
 	
 	@GetMapping("/restaurantes/por-taxa-frete")
@@ -80,5 +83,12 @@ public class TesteController {
 		
 		return restauranteRepository.findComfreteGratis(nome);
 	}
+	
+	@GetMapping("/restaurantes/primeiro")
+	public Optional<Restaurante> retaurantePrimeiro() {
+		
+		return restauranteRepository.buscarPrimeiro();
+	}
+	
 	
 }
