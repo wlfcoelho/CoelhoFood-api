@@ -1,53 +1,68 @@
 package com.algaworks.coelhofood.infrastructure.repository;
 
+import static com.algaworks.coelhofood.infrastructure.repository.spec.RestauranteSpecs.comFreteGratis;
+import static com.algaworks.coelhofood.infrastructure.repository.spec.RestauranteSpecs.comNomeSemelhante;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.Predicate;
 
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import com.algaworks.coelhofood.domain.model.Restaurante;
 import com.algaworks.coelhofood.domain.repository.RestauranteRepository;
+import com.algaworks.coelhofood.domain.repository.RestauranteRepositoryQueries;
 
-@Component
-public class RestauranteRepositoryImpl implements RestauranteRepository{
+@Repository
+public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
 
 	@PersistenceContext
 	private EntityManager manager;
 	
-	@Override
-	public List<Restaurante> listar() {
-		return manager.createQuery("from Restaurante", Restaurante.class)
-				.getResultList();
-	}
+	@Autowired @Lazy //o lazy somente executa a injeção de dependência quando é necessário, caso contrário ficaria redundante
+	private RestauranteRepository restauranteRepository;
 
 	@Override
-	public Restaurante buscar(Long id) {
-		return manager.find(Restaurante.class, id);
-	}
+	public List<Restaurante> find(String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal) {
 
-	@Override
-	@Transactional
-	public Restaurante salvar(Restaurante restaurante) {
-		return manager.merge(restaurante);
-	}
+		var builder = manager.getCriteriaBuilder();
 
-	@Override
-	@Transactional
-	public void remover(Long id) {
-		Restaurante restaurante = buscar (id);
+		var criteria = builder.createQuery(Restaurante.class);
 		
-		if (restaurante == null) {
-			
-			throw new EmptyResultDataAccessException(1);
+		var root = criteria.from(Restaurante.class);
+
+		var predicates = new ArrayList<Predicate>();
+
+		if (StringUtils.hasText(nome)) {
+			predicates.add(builder.like(root.get("nome"), "%" + nome + "%"));
 		}
-		
-		manager.remove(restaurante);
-		
+
+		if (taxaFreteInicial != null) {
+			predicates.add(builder.greaterThanOrEqualTo(root.get("taxaFrete"), taxaFreteInicial));
+		}
+
+		if (taxaFreteFinal != null) {
+			predicates.add(builder.lessThanOrEqualTo(root.get("taxaFrete"), taxaFreteFinal));
+		}
+
+		criteria.where(predicates.toArray(new Predicate[0]));
+
+		TypedQuery<Restaurante> query = manager.createQuery(criteria);
+		return query.getResultList();
+
 	}
 
-	
+	@Override
+	public List<Restaurante> findComfreteGratis(String nome) {
+		
+		return restauranteRepository.findAll(comFreteGratis().and(comNomeSemelhante(nome)));
+	}
 }

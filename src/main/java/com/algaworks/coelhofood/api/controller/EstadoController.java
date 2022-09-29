@@ -1,7 +1,7 @@
 package com.algaworks.coelhofood.api.controller;
 
 import java.util.List;
-
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +37,19 @@ public class EstadoController {
 	
 	@GetMapping(value = "/listar")
 	public List<Estado> lista(){
-		return estadoRepository.listar();
+		return estadoRepository.findAll();
 	}
 	
 	@GetMapping("/{estadoId}")
 	public ResponseEntity<Estado> buscar (@PathVariable Long estadoId){
-		Estado estado = estadoRepository.buscar(estadoId);
+		Optional <Estado> estado = estadoRepository.findById(estadoId);
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.LOCATION, "http://api.coelhofood.local:8080/v1/estados");
 		
 		if (estado != null) {
 			
-			return ResponseEntity.ok(estado);
+			return ResponseEntity.ok(estado.get());
 		}
 		
 		return ResponseEntity.notFound().build();
@@ -64,13 +64,13 @@ public class EstadoController {
 	@PutMapping("/{estadoId}")
 	public ResponseEntity<Estado> atualizar (@PathVariable Long estadoId, 
 			@RequestBody Estado estado){
-		Estado estadoAtual = estadoRepository.buscar(estadoId);
+		Estado estadoAtual = estadoRepository.findById(estadoId).orElse(null);
 		
 		if (estadoAtual != null) {
 			
 			BeanUtils.copyProperties(estado, estadoAtual, "id");
 			
-			estadoAtual = estadoRepository.salvar(estadoAtual);
+			estadoAtual = cadastroEstado.salvar(estadoAtual);
 			return ResponseEntity.ok(estadoAtual);
 		}
 		
