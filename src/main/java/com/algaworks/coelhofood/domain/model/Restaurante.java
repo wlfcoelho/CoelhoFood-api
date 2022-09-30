@@ -29,6 +29,7 @@ public class Restaurante {
 	//@JoinColumn(name = "nome_da_coluna", nullable = false) ele cria uma coluna no sql - BD - , nullable = false indica que este campo não pode ser null
 	private Cozinha cozinha;
 
+	@JsonIgnore
 	@Embedded
 	private Endereço endereço;
 
