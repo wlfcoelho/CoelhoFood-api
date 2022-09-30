@@ -2,6 +2,8 @@ package com.algaworks.coelhofood.domain.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -27,6 +29,7 @@ public class Restaurante {
 	//@JoinColumn(name = "nome_da_coluna", nullable = false) ele cria uma coluna no sql - BD - , nullable = false indica que este campo não pode ser null
 	private Cozinha cozinha;
 
+	@JsonIgnore
 	@ManyToMany
 	@JoinTable(name = "restaurante_forma_pagamento",
 				joinColumns = @JoinColumn (name = "restaurante_id"),
