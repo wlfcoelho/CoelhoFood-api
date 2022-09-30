@@ -1,16 +1,12 @@
 package com.algaworks.coelhofood.domain.model;
 
-import java.math.BigDecimal;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Data
@@ -30,5 +26,11 @@ public class Restaurante {
 	@ManyToOne
 	//@JoinColumn(name = "nome_da_coluna", nullable = false) ele cria uma coluna no sql - BD - , nullable = false indica que este campo não pode ser null
 	private Cozinha cozinha;
+
+	@ManyToMany
+	@JoinTable(name = "restaurante_forma_pagamento",
+				joinColumns = @JoinColumn (name = "restaurante_id"),
+				inverseJoinColumns = @JoinColumn (name = "forma_pagamento_id"))
+	private List<FormaPagamento> formasPagamento = new ArrayList<>();
 
 }
