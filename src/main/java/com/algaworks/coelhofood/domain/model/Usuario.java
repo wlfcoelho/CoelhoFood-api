@@ -24,6 +24,9 @@ public class Usuario {
     private String nome;
 
     @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
     private String senha;
 
     @JsonIgnore
@@ -32,7 +35,7 @@ public class Usuario {
     private LocalDateTime dataCadastro;
 
     @ManyToMany
-    @JoinTable(name = "usuario_grupo", joinColumns = @JoinColumn(name = "grupo_id"),
-            inverseJoinColumns = @JoinColumn (name = "permissao_id"))
+    @JoinTable(name = "usuario_grupo", joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn (name = "grupo_id"))
     private List<Grupo> grupos = new ArrayList<>();
 }
