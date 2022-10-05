@@ -1,11 +1,10 @@
 package com.algaworks.coelhofood.api.controller;
 
 import java.util.List;
-
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,28 +35,20 @@ public class CozinhaController {
 	
 	@GetMapping(value = "/listar")
 	public List<Cozinha> lista(){
-		return cozinhaRepository.listar();
+		return cozinhaRepository.findAll();
 	}
 	
 	@GetMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> buscar(@PathVariable Long cozinhaId){
-		Cozinha cozinha = cozinhaRepository.buscar(cozinhaId);
+		Optional <Cozinha> cozinha = cozinhaRepository.findById(cozinhaId);
 			
-//		return ResponseEntity.status(HttpStatus.OK).body(cozinha);
 		
+		if (cozinha.isPresent()) {
 		
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.LOCATION, "http://api.coelhofood.local:8080/v1/cozinhas");
-		if (cozinha != null) {
+			return ResponseEntity.ok(cozinha.get());	
+
+		}	
 		
-			return ResponseEntity.ok(cozinha);	
-//			return ResponseEntity
-//				.status(HttpStatus.NOT_FOUND)
-//				.headers(headers)
-//				.build();
-		}
-		
-		//return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		return ResponseEntity.notFound().build();
 	
 	}
@@ -71,14 +62,14 @@ public class CozinhaController {
 	@PutMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId, 
 			@RequestBody Cozinha cozinha) {
-		Cozinha cozinhaAtual = cozinhaRepository.buscar(cozinhaId);
+		Optional <Cozinha> cozinhaAtual = cozinhaRepository.findById(cozinhaId);
 		
-		if(cozinhaAtual != null) {	
-			//cozinhaAtual.setNome(cozinha.getNome());
-			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
+		if(cozinhaAtual.isPresent()) {	
+			//inserir o get neste ponto, pois, estamos usando o optional (copyProperties não da erro, pois, ele é um obj)
+			BeanUtils.copyProperties(cozinha, cozinhaAtual.get(), "id");
 			
-			cozinhaAtual = cozinhaRepository.salvar(cozinhaAtual);
-			return ResponseEntity.ok(cozinhaAtual);
+			Cozinha cozinhaSalva = cadastroCozinha.salvar(cozinhaAtual.get());
+			return ResponseEntity.ok(cozinhaSalva);
 		}
 		
 		return ResponseEntity.notFound().build();
