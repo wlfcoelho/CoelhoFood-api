@@ -3,12 +3,14 @@ package com.algaworks.coelhofood.domain.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.algaworks.coelhofood.domain.exception.EntidadeEmUsoException;
 import com.algaworks.coelhofood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.coelhofood.domain.model.Cozinha;
 import com.algaworks.coelhofood.domain.repository.CozinhaRepository;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CadastroCozinhaService {
@@ -20,11 +22,12 @@ public class CadastroCozinhaService {
 		return cozinhaRepository.save(cozinha);
 	}
 	
-	public void excluir (Long cozinhaId) throws EntidadeNaoEncontradaException, EntidadeEmUsoException {
+	public void excluir (Long cozinhaId) {
 		try {
 			cozinhaRepository.deleteById(cozinhaId);
 			
 		} catch (EmptyResultDataAccessException e) {
+
 			throw new EntidadeNaoEncontradaException(
 					String.format("Não existe um cadastro de cozinha com código %d", cozinhaId));
 			
