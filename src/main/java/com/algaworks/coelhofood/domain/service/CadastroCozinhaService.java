@@ -3,14 +3,12 @@ package com.algaworks.coelhofood.domain.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.algaworks.coelhofood.domain.exception.EntidadeEmUsoException;
 import com.algaworks.coelhofood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.coelhofood.domain.model.Cozinha;
 import com.algaworks.coelhofood.domain.repository.CozinhaRepository;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CadastroCozinhaService {
@@ -23,6 +21,7 @@ public class CadastroCozinhaService {
 	private CozinhaRepository cozinhaRepository;
 	
 	public Cozinha salvar (Cozinha cozinha) {
+
 		return cozinhaRepository.save(cozinha);
 	}
 	

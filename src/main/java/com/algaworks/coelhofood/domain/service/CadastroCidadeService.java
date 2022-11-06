@@ -16,22 +16,24 @@ import com.algaworks.coelhofood.domain.repository.EstadoRepository;
 
 @Service
 public class CadastroCidadeService {
+	public static final String NÃO_EXISTE_UM_CADASTRO_PARA_CIDADE = "Não existe um cadastro para cidade com código %d";
+	public static final String CIDADE_DE_CÓDIGO_D_NÃO_PODE_SER_REMOVIDA = "Cidade de código d% não pode ser removida, pois, está em uso";
 	//TODO TESTAR MÉTODOS TANTO CIDADE QUANTO ESTADO
 	@Autowired
 	private CidadeRepository cidadeRepository;
 	
 	@Autowired
 	private EstadoRepository estadoRepository;
+
+	@Autowired
+	private CadastroEstadoService cadastroEstadoService;
 	
-	public Cidade salvar(Cidade cidade) throws EntidadeNaoEncontradaException {
+	public Cidade salvar(Cidade cidade) {
 		Long estadoId = cidade.getEstado().getId();
-		Optional <Estado> estado = estadoRepository.findById(estadoId);
-		
-		if (estado == null) {
-			throw new EntidadeNaoEncontradaException(
-					String.format("Não existe cadastro para o estado com o código %d", estadoId));
-		}
-		cidade.setEstado(estado.get());
+
+		Estado estado = cadastroEstadoService.buscarOuFalhar(estadoId);
+
+		cidade.setEstado(estado);
 		
 		return cidadeRepository.save(cidade);
 	}
@@ -43,10 +45,16 @@ public class CadastroCidadeService {
 			
 		} catch (EmptyResultDataAccessException e) {
 			throw new EntidadeEmUsoException(
-					String.format("Não existe um cadastro de cozinha em c[odigo %d", cidadeId));
+					String.format(NÃO_EXISTE_UM_CADASTRO_PARA_CIDADE, cidadeId));
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeNaoEncontradaException(
-					String.format("Cidade de código d% não pode ser removida, pois, está em uso", cidadeId));
+					String.format(CIDADE_DE_CÓDIGO_D_NÃO_PODE_SER_REMOVIDA, cidadeId));
 		}
+	}
+
+	public Cidade bucarOuFalhar (Long cidadeId){
+		return cidadeRepository.findById(cidadeId)
+				.orElseThrow(() -> new EntidadeNaoEncontradaException(
+						String.format(NÃO_EXISTE_UM_CADASTRO_PARA_CIDADE, cidadeId)));
 	}
 }

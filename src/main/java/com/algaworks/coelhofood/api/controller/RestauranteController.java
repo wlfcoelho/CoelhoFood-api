@@ -41,14 +41,8 @@ public class RestauranteController {
 	}
 
 	@GetMapping("/{restauranteId}")
-	public ResponseEntity<Restaurante> buscar(@PathVariable Long restauranteId) {
-		Optional <Restaurante> restaurante = restauranteRepository.findById(restauranteId);
-
-		if (restaurante.isPresent()) {
-			return ResponseEntity.ok(restaurante.get());
-		}
-
-		return ResponseEntity.notFound().build();
+	public Restaurante buscar(@PathVariable Long restauranteId) {
+		return cadastroRestaurante.buscarOuFalhar(restauranteId);
 	}
 
 	@PostMapping
@@ -65,40 +59,21 @@ public class RestauranteController {
 	}
 
 	@PutMapping("/{restauranteId}")
-	public ResponseEntity<?> atualizar(@PathVariable Long restauranteId, @RequestBody Restaurante restaurante) {
+	public Restaurante atualizar(@PathVariable Long restauranteId, @RequestBody Restaurante restaurante) {
 
-		try {
+		Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(restauranteId);
 
-			Restaurante restauranteAtual = restauranteRepository.findById(restauranteId).orElse(null);
+		BeanUtils.copyProperties(restaurante, restauranteAtual,
+				"id", "formasPagamento", "endereco", "dataCadastro", "produtos");
 
-			if (restauranteAtual != null) {
-				BeanUtils.copyProperties(restaurante, restauranteAtual,
-						"id", "formasPagamento", "endereco", "dataCadastro", "produtos");
-
-				restauranteAtual = cadastroRestaurante.salvar(restauranteAtual);
-
-				return ResponseEntity.ok(restauranteAtual);
-			}
-
-			return ResponseEntity.notFound().build();
-
-		} catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.badRequest()
-					.body(e.getMessage());
-
-		}
-
+		return cadastroRestaurante.salvar(restauranteAtual);
 	}
 
 	@PatchMapping("/{restauranteId}")
-	public ResponseEntity<?> atualizarParcial(@PathVariable Long restauranteId,
+	public Restaurante atualizarParcial(@PathVariable Long restauranteId,
 			@RequestBody Map<String, Object> campos) {
 
-		Restaurante restauranteAtual = restauranteRepository.findById(restauranteId).orElse(null);
-
-		if (restauranteAtual == null) {
-			return ResponseEntity.notFound().build();
-		}
+		Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(restauranteId);
 
 		merge(campos, restauranteAtual);
 
