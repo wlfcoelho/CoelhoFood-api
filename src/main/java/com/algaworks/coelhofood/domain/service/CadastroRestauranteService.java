@@ -1,6 +1,7 @@
 package com.algaworks.coelhofood.domain.service;
 
 import com.algaworks.coelhofood.domain.exception.EntidadeNaoEncontradaException;
+import com.algaworks.coelhofood.domain.exception.RestauranteNaoEncontradaException;
 import com.algaworks.coelhofood.domain.model.Cozinha;
 import com.algaworks.coelhofood.domain.model.Restaurante;
 import com.algaworks.coelhofood.domain.repository.RestauranteRepository;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class CadastroRestauranteService {
 
-	public static final String NÃO_EXISTE_UM_CADASTRO_DO_RESTAURANTE = "Não existe um cadastro do restaurante com código %d";
 	@Autowired
 	private RestauranteRepository restauranteRepository;
 
@@ -29,7 +29,6 @@ public class CadastroRestauranteService {
 
 	public Restaurante buscarOuFalhar (Long restauranteId){
 		return restauranteRepository.findById(restauranteId)
-				.orElseThrow(() -> new EntidadeNaoEncontradaException(
-						String.format(NÃO_EXISTE_UM_CADASTRO_DO_RESTAURANTE, restauranteId)));
+				.orElseThrow(() -> new RestauranteNaoEncontradaException(restauranteId));
 	}
 }
