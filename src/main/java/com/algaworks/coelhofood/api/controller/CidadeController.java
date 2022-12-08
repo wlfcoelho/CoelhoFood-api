@@ -1,8 +1,10 @@
 package com.algaworks.coelhofood.api.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.algaworks.coelhofood.api.exceptionhandler.Problema;
 import com.algaworks.coelhofood.domain.exception.EstadoNaoEncontradoException;
 import com.algaworks.coelhofood.domain.exception.NegocioException;
 import org.springframework.beans.BeanUtils;
@@ -66,5 +68,30 @@ public class CidadeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remover(@PathVariable Long cidadeId) {
         cadastroCidade.excluir(cidadeId);
+
+    }
+
+    @ExceptionHandler(EntidadeNaoEncontradaException.class)
+    public ResponseEntity<?> tratarEntidadeNaoEncontrataException(EntidadeNaoEncontradaException e) {
+
+        Problema problema = Problema.builder()
+                .dataHora(LocalDateTime.now())
+                .mensagem(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(problema);
+    }
+
+    @ExceptionHandler(NegocioException.class)
+    public ResponseEntity<?> tratarNegocioException(NegocioException e) {
+
+        Problema problema = Problema.builder()
+                .dataHora(LocalDateTime.now())
+                .mensagem(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(problema);
     }
 }
