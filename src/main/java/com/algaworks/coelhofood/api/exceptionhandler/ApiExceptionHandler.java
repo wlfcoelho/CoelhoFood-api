@@ -50,10 +50,10 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(EntidadeEmUsoException.class)
-    public ResponseEntity<?> tratarEntidadeEmUsoException (){
+    public ResponseEntity<?> tratarEntidadeEmUsoException (EntidadeEmUsoException e){
         Problema problema = Problema.builder()
                 .dataHora(LocalDateTime.now())
-                .mensagem("O tipo de mídia não é aceito.")
+                .mensagem(e.getMessage())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT)

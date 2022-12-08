@@ -66,8 +66,8 @@ public class CidadeController {
 
     @DeleteMapping("/{cidadeId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void remover(@PathVariable Long cidadeId) {
-        cadastroCidade.excluir(cidadeId);
+    public void remover(@PathVariable Long cidadeId) throws EntidadeEmUsoException, EntidadeNaoEncontradaException {
+         cadastroCidade.excluir(cidadeId);
 
     }
 }
