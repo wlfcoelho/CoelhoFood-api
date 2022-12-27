@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.algaworks.coelhofood.domain.exception.CozinhaNaoEncontradaException;
 import com.algaworks.coelhofood.domain.exception.NegocioException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class RestauranteController {
     public Restaurante adicionar(@RequestBody Restaurante restaurante) {
         try {
             return cadastroRestaurante.salvar(restaurante);
-        } catch (EntidadeNaoEncontradaException e) {
+        } catch (CozinhaNaoEncontradaException e) {
             throw new NegocioException(e.getMessage());
         }
     }
@@ -58,13 +59,14 @@ public class RestauranteController {
     @PutMapping("/{restauranteId}")
     public Restaurante atualizar(@PathVariable Long restauranteId, @RequestBody Restaurante restaurante) {
 
-        Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(restauranteId);
-
-        BeanUtils.copyProperties(restaurante, restauranteAtual,
-                "id", "formasPagamento", "endereco", "dataCadastro", "produtos");
         try {
+            Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(restauranteId);
+
+            BeanUtils.copyProperties(restaurante, restauranteAtual,
+                    "id", "formasPagamento", "endereco", "dataCadastro", "produtos");
+
             return cadastroRestaurante.salvar(restauranteAtual);
-        } catch (EntidadeNaoEncontradaException e) {
+        } catch (CozinhaNaoEncontradaException e) {
             throw new NegocioException(e.getMessage());
         }
     }
@@ -76,11 +78,9 @@ public class RestauranteController {
         Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(restauranteId);
 
         merge(campos, restauranteAtual);
-        try {
-            return atualizar(restauranteId, restauranteAtual);
-        } catch (EntidadeNaoEncontradaException e){
-            throw new NegocioException(e.getMessage());
-        }
+
+        return atualizar(restauranteId, restauranteAtual);
+
     }
 
     private void merge(Map<String, Object> dadosOrigem, Restaurante restauranteDestino) {

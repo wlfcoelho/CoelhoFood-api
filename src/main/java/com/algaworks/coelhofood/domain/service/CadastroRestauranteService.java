@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class CadastroRestauranteService {
 
+	public static final String NÂO_EXISTE_UM_CADASTROS_PARA_O_RESTAURANTE =
+			"Não existe  um cadastro de restaurante com o código %d";
 	@Autowired
 	private RestauranteRepository restauranteRepository;
 
@@ -29,6 +31,7 @@ public class CadastroRestauranteService {
 
 	public Restaurante buscarOuFalhar (Long restauranteId){
 		return restauranteRepository.findById(restauranteId)
-				.orElseThrow(() -> new RestauranteNaoEncontradaException(restauranteId));
+				.orElseThrow(() -> new RestauranteNaoEncontradaException(
+						String.format(NÂO_EXISTE_UM_CADASTROS_PARA_O_RESTAURANTE, restauranteId)));
 	}
 }
