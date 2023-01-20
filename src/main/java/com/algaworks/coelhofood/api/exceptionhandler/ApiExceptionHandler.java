@@ -3,7 +3,9 @@ package com.algaworks.coelhofood.api.exceptionhandler;
 import com.algaworks.coelhofood.domain.exception.EntidadeEmUsoException;
 import com.algaworks.coelhofood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.coelhofood.domain.exception.NegocioException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -32,7 +35,14 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                     status,
                     request);
 
+        } else if (rootCause instanceof PropertyBindingException) {
+            return handlePropertyBindingException((PropertyBindingException) rootCause,
+                    headers,
+                    status,
+                    request);
+
         }
+
         ProblemType problemType = ProblemType.MENSAGEM_INCOMPREENSIVEL;
 
         String detail = "O corpo da requisição está inválido. Verifique erro de sintaxe.";
@@ -46,24 +56,51 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<Object> handleInvalidFormatException(InvalidFormatException ex,
                                                                 HttpHeaders headers,
                                                                 HttpStatus status,
-                                                                WebRequest request)
-    {
-        //neste caso estamos filtrando o que queremos trazer do path: cozinha.id
+                                                                WebRequest request) {
+        /*//neste caso estamos filtrando o que queremos trazer do path: cozinha.id
         String path = ex.getPath().stream()
                 //neste caso trazemos os campos cozinha e id
                 .map(ref -> ref.getFieldName())
                 //limitação entre os campos ponto(.)
-                .collect(Collectors.joining("."));
+                .collect(Collectors.joining("."));*/
+
+        String path = joinPath(ex.getPath());
 
         ProblemType problemType = ProblemType.MENSAGEM_INCOMPREENSIVEL;
 
         String detail = String.format("A propriedade '%s' recebeu o valor '%s', " +
-                "que é de um tipo inválido. Corrija e informe um valor compatível com o tipo '%s'.",
+                        "que é de um tipo inválido. Corrija e informe um valor compatível com o tipo '%s'.",
                 path, ex.getValue(), ex.getTargetType().getSimpleName());
 
         Problem problem = createProblemBuilder(status, problemType, detail).build();
 
         return handleExceptionInternal(ex, problem, headers, status, request);
+    }
+
+
+    private ResponseEntity<Object> handlePropertyBindingException(PropertyBindingException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatus status,
+                                                                  WebRequest request) {
+        // Criei o método joinPath para reaproveitar em todos os métodos que precisam
+        // concatenar os nomes das propriedades (separando por ".")
+        String path = joinPath(ex.getPath());
+
+        ProblemType problemType = ProblemType.MENSAGEM_INCOMPREENSIVEL;
+
+        String detail = String.format("A propriedade '%s' não existe. "
+                        + "Corrija ou remova essa propriedade e tente novamente.", path);
+
+        Problem problem = createProblemBuilder(status, problemType, detail).build();
+
+        return handleExceptionInternal(ex, problem, headers, status, request);
+    }
+
+    //O método joinPath irá concatenar os nomes das propriedades, separando-as por ".".
+    private String joinPath(List<JsonMappingException.Reference> references) {
+        return references.stream()
+                .map(ref -> ref.getFieldName())
+                .collect(Collectors.joining("."));
     }
 
     @ExceptionHandler(EntidadeNaoEncontradaException.class)
