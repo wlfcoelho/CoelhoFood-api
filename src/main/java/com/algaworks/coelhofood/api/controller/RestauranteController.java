@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RequestMapping(value = "v1/restaurantes")
 @RestController
@@ -55,7 +56,7 @@ public class RestauranteController {
     }
 
     @PostMapping
-    public Restaurante adicionar(@RequestBody Restaurante restaurante) {
+    public Restaurante adicionar(@RequestBody @Valid Restaurante restaurante) {
         try {
             return cadastroRestaurante.salvar(restaurante);
         } catch (CozinhaNaoEncontradaException e) {

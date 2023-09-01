@@ -12,6 +12,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -65,9 +67,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private ResponseEntity<Object> handleInvalidFormat(InvalidFormatException ex,
-                                                                HttpHeaders headers,
-                                                                HttpStatus status,
-                                                                WebRequest request) {
+                                                       HttpHeaders headers,
+                                                       HttpStatus status,
+                                                       WebRequest request) {
         /*//neste caso estamos filtrando o que queremos trazer do path: cozinha.id
         String path = ex.getPath().stream()
                 //neste caso trazemos os campos cozinha e id
@@ -224,7 +226,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemType problemType = ProblemType.PARAMETRO_INVALIDO;
 
         String detail = String.format("O parâmetro URL '%s' recebeu o valor '%s', " +
-                "que é de um tipo inválido. Corrija e informe um valor compatível com o tipo %s",
+                        "que é de um tipo inválido. Corrija e informe um valor compatível com o tipo %s",
                 ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName());
 
         Problem problem = createProblemBuilder(status, problemType, detail)
@@ -240,7 +242,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers,
             HttpStatus status,
             WebRequest request
-    ){
+    ) {
         ProblemType problemType = ProblemType.RECURSO_NAO_ENCONTRADO;
 
         String detail = String.format("O recurso %s, que você tentou acessar, é inexistente.",
@@ -254,10 +256,39 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, problem, headers, status, request);
     }
 
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request
+    ) {
+        ProblemType problemType = ProblemType.DADOS_INVALIDOS;
+
+        String detail = String.format("um ou mais campos estão inválidos. Faça o preenchimento" +
+                "correto e tente novamente", ex.getMessage());
+
+        BindingResult bindingResult = ex.getBindingResult();
+
+        List<Problem.Field> problemField = bindingResult.getFieldErrors().stream()
+                .map(fieldError -> Problem.Field.builder()
+                        .name(fieldError.getField())
+                        .userMessage(fieldError.getDefaultMessage())
+                        .build())
+                .collect(Collectors.toList());
+
+        Problem problem = createProblemBuilder(status, problemType, detail)
+                .userMessage(detail)
+                .fields(problemField)
+                .build();
+
+        return handleExceptionInternal(ex, problem, headers, status, request);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleUncaught(
-                                   Exception ex,
-                                   WebRequest request){
+            Exception ex,
+            WebRequest request) {
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
