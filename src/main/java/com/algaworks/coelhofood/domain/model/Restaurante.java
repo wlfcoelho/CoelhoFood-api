@@ -1,33 +1,23 @@
 package com.algaworks.coelhofood.domain.model;
 
+import com.algaworks.coelhofood.api.Groups;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.groups.ConvertGroup;
+import javax.validation.groups.Default;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
-
-import com.algaworks.coelhofood.api.Groups;
-import lombok.NonNull;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Entity
 @Data
@@ -41,13 +31,13 @@ public class Restaurante {
 
     //@NotNull
 	//@NotEmpty
-	@NotBlank (groups = Groups.CadastroRestaurante.class)
+	@NotBlank
     @Column(nullable = false)
     private String nome;
 
 	//neste caso o primeiro limita o do zero pra frente, o segundo númeroso positivos ou zero
     //@DecimalMin("0")
-    @PositiveOrZero (groups = Groups.CadastroRestaurante.class)
+    @PositiveOrZero
     @Column(name = "taxa_frete", nullable = false)
     private BigDecimal taxaFrete;
 
@@ -58,7 +48,8 @@ public class Restaurante {
     //@JsonIgnore
     //ele cria uma coluna no sql - BD - , nullable = false indica que este campo não pode ser null
 	@JoinColumn(name = "cozinha_id", nullable = false)
-	@NotNull (groups = Groups.CadastroRestaurante.class)
+	@NotNull
+    @ConvertGroup(from = Default.class, to = Groups.CozinhaId.class)
 	//essa anotação valida os dados que estão dentro de cozinha
 	@Valid
 	private Cozinha cozinha;
