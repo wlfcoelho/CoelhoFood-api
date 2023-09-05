@@ -37,6 +37,7 @@ public class Restaurante {
 
 	//neste caso o primeiro limita o do zero pra frente, o segundo númeroso positivos ou zero
     //@DecimalMin("0")
+    @NotNull
     @PositiveOrZero
     @Column(name = "taxa_frete", nullable = false)
     private BigDecimal taxaFrete;
