@@ -1,6 +1,7 @@
 package com.algaworks.coelhofood.domain.model;
 
 import com.algaworks.coelhofood.core.validation.Groups;
+import com.algaworks.coelhofood.core.validation.TaxaFrete;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,7 +39,8 @@ public class Restaurante {
 	//neste caso o primeiro limita o do zero pra frente, o segundo númeroso positivos ou zero
     //@DecimalMin("0")
     @NotNull
-    @PositiveOrZero
+    //@PositiveOrZero
+    @TaxaFrete
     @Column(name = "taxa_frete", nullable = false)
     private BigDecimal taxaFrete;
 
