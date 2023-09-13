@@ -24,6 +24,8 @@ import com.algaworks.coelhofood.domain.model.Estado;
 import com.algaworks.coelhofood.domain.repository.EstadoRepository;
 import com.algaworks.coelhofood.domain.service.CadastroEstadoService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(value = "v1/estados")
 public class EstadoController {
@@ -48,13 +50,13 @@ public class EstadoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Estado adicionar(@RequestBody Estado estado) {
+    public Estado adicionar(@RequestBody @Valid Estado estado) {
         return cadastroEstado.salvar(estado);
     }
 
     @PutMapping("/{estadoId}")
     public Estado atualizar(@PathVariable Long estadoId,
-                            @RequestBody Estado estado) {
+                            @RequestBody @Valid Estado estado) {
 
         Estado estadoAtual = cadastroEstado.buscarOuFalhar(estadoId);
 
