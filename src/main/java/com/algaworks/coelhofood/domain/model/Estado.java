@@ -8,10 +8,9 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import com.algaworks.coelhofood.api.Groups;
+import com.algaworks.coelhofood.core.validation.Groups;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 
 @Entity
 @Data

@@ -1,6 +1,6 @@
 package com.algaworks.coelhofood.domain.model;
 
-import com.algaworks.coelhofood.api.Groups;
+import com.algaworks.coelhofood.core.validation.Groups;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

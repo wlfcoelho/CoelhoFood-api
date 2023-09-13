@@ -1,4 +1,4 @@
-package com.algaworks.coelhofood.api;
+package com.algaworks.coelhofood.core.validation;
 
 public interface Groups {
 
