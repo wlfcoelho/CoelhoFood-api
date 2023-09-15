@@ -1,5 +1,7 @@
 package com.algaworks.coelhofood.api.exceptionhandler;
 
+import ch.qos.logback.classic.pattern.RootCauseFirstThrowableProxyConverter;
+import com.algaworks.coelhofood.core.validation.ValidacaoException;
 import com.algaworks.coelhofood.domain.exception.EntidadeEmUsoException;
 import com.algaworks.coelhofood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.coelhofood.domain.exception.NegocioException;
@@ -265,33 +267,31 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @Autowired
     private MessageSource messageSource;
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex,
+    private ResponseEntity<Object> handleValidationInternal(
+            Exception ex,
+            BindingResult bindingResult,
             HttpHeaders headers,
             HttpStatus status,
             WebRequest request
-    ) {
+    ){
+
         ProblemType problemType = ProblemType.DADOS_INVALIDOS;
-
-        String detail = String.format("Um ou mais campos estão inválidos. Faça o preenchimento " +
-                "correto e tente novamente", ex.getMessage());
-
-        BindingResult bindingResult = ex.getBindingResult();
+        String detail = "Um ou mais campos estão inválidos. Faça o preenchimento correto e tente novamente.";
 
         List<Problem.Object> problemObjects = bindingResult.getAllErrors().stream()
                 .map(objectError -> {
-                    String message = messageSource.getMessage(objectError, LocaleContextHolder.getLocale());
+                  String message = messageSource.getMessage(objectError, LocaleContextHolder.getLocale());
 
-                    String name = objectError.getObjectName();
+                  String name = objectError.getObjectName();
 
-                    if (objectError instanceof FieldError){
+                  if (objectError instanceof FieldError){
+
                         name = ((FieldError) objectError).getField();
-                    }
-                    return Problem.Object.builder()
-                            .name(name)
-                            .userMessage(message)
-                            .build();
+                  }
+                  return Problem.Object.builder()
+                          .name(name)
+                          .userMessage(message)
+                          .build();
                 })
                 .collect(Collectors.toList());
 
@@ -301,6 +301,25 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return handleExceptionInternal(ex, problem, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatus status,
+            WebRequest request
+    ) {
+        return handleExceptionInternal(ex, ex.getBindingResult(), headers, status, request);
+    }
+
+    @ExceptionHandler({ValidacaoException.class})
+    protected ResponseEntity<Object> handleValidationException(
+            ValidacaoException ex,
+            WebRequest request
+    ){
+        return handleValidationInternal(ex, ex.getBindingResult(),
+                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(Exception.class)
