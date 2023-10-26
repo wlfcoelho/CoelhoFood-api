@@ -7,7 +7,7 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.ValidationException;
 import java.math.BigDecimal;
 
-public class ValorZeroIncluiDescricaoValidator implements ConstraintValidator<ValorZeroIncluiDescricao, Object> {
+public class  ValorZeroIncluiDescricaoValidator implements ConstraintValidator<ValorZeroIncluiDescricao, Object> {
 
     private String valorField;
     private String descricaoField;

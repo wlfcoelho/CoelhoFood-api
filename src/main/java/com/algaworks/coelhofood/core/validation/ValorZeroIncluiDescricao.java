@@ -10,7 +10,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({TYPE})
 @Retention(RUNTIME)
-@Constraint(validatedBy = {ValorZeroIncluiDescricaoValidator.class })
+@Constraint(validatedBy = {ValorZeroIncluiDescricaoValidator.class   })
 public @interface ValorZeroIncluiDescricao {
 
     String message() default "{múltiplo inválido}";
