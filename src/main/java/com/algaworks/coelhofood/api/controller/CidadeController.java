@@ -1,21 +1,19 @@
 package com.algaworks.coelhofood.api.controller;
 
-import java.util.List;
-
+import com.algaworks.coelhofood.domain.exception.EntidadeEmUsoException;
+import com.algaworks.coelhofood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.coelhofood.domain.exception.EstadoNaoEncontradoException;
 import com.algaworks.coelhofood.domain.exception.NegocioException;
+import com.algaworks.coelhofood.domain.model.Cidade;
+import com.algaworks.coelhofood.domain.repository.CidadeRepository;
+import com.algaworks.coelhofood.domain.service.CadastroCidadeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import com.algaworks.coelhofood.domain.exception.EntidadeEmUsoException;
-import com.algaworks.coelhofood.domain.exception.EntidadeNaoEncontradaException;
-import com.algaworks.coelhofood.domain.model.Cidade;
-import com.algaworks.coelhofood.domain.repository.CidadeRepository;
-import com.algaworks.coelhofood.domain.service.CadastroCidadeService;
-
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "v1/cidades")
