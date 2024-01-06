@@ -55,7 +55,7 @@ public class CadastroCozinhaIntegrationIT {
         RestAssured.port = port;
         RestAssured.basePath = "v1/cozinhas";
         jsonCorretoCozinhaChinesa = ResourceUtils.getContentFromResource(
-                "/json/cozinha-chinesa.json"
+                "/json/correto/cozinha-chinesa.json"
         );
         databaseCleaner.clearTables();
         prepararDados();

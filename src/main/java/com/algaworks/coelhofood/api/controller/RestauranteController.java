@@ -7,6 +7,7 @@ import com.algaworks.coelhofood.domain.repository.RestauranteRepository;
 import com.algaworks.coelhofood.domain.service.CadastroRestauranteService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,7 +24,7 @@ public class RestauranteController {
     private CadastroRestauranteService cadastroRestaurante;
 
 
-    @GetMapping
+    @GetMapping("/listar")
     public List<Restaurante> listar() {
         return restauranteRepository.findAll();
     }
@@ -35,6 +36,7 @@ public class RestauranteController {
 
     //corrigir a exception de null, pois, está retornando 500 - verificar todos os controller - voltar camapo não deve ser null
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Restaurante adicionar(
             @RequestBody @Valid Restaurante restaurante) {
         try {
