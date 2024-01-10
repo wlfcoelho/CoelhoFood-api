@@ -64,7 +64,7 @@ public class RestauranteIntegrationIT {
     int RESTAURANTE_ID_INEXISTENTE = 110;
 
     @Before
-    public void setup(){
+    public void setup() {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         RestAssured.port = port;
         RestAssured.basePath = "v1/restaurantes";
@@ -78,37 +78,37 @@ public class RestauranteIntegrationIT {
                 "/json/incorreto/restauranteSemTaxa"
         );
         jsonRestauranteComCozinhaInexistente = ResourceUtils.getContentFromResource(
-          "/json/incorreto/restauranteComCozinhaInexistente"
+                "/json/incorreto/restauranteComCozinhaInexistente"
         );
         databaseCleaner.clearTables();
         prepararDados();
     }
 
     @Test
-    public void deveContarAQuantDeRestaurates_QuandoConsultarRestaurantes(){
-                given()
-                    .accept(ContentType.JSON)
+    public void deveContarAQuantDeRestaurates_QuandoConsultarRestaurantes() {
+        given()
+                .accept(ContentType.JSON)
                 .when()
-                    .get("/listar")
+                .get("/listar")
                 .then()
-                    .body("", hasSize(quantidadeDeRestaurantesCadastradas));
+                .body("", hasSize(quantidadeDeRestaurantesCadastradas));
     }
 
     @Test
-    public void testeRetornarStatus201_QuandoCadastrarCozinha(){
-                given()
-                    .body(jsonRestauranteAlemao)
-                    .contentType(ContentType.JSON)
-                    .accept(ContentType.JSON)
+    public void testeRetornarStatus201_QuandoCadastrarCozinha() {
+        given()
+                .body(jsonRestauranteAlemao)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
                 .when()
-                    .post()
+                .post()
                 .then()
-                    .statusCode(HttpStatus.CREATED.value());
+                .statusCode(HttpStatus.CREATED.value());
 
     }
 
     @Test
-    public void testeRetornarStatus400_QuandoCadastrarSemCozinha(){
+    public void testeRetornarStatus400_QuandoCadastrarSemCozinha() {
         given()
                 .body(jsonRestauranteSemCozinha)
                 .contentType(ContentType.JSON)
@@ -121,7 +121,7 @@ public class RestauranteIntegrationIT {
     }
 
     @Test
-    public void testeRetornarStatus400_QuandoCadastrarSemTaxa(){
+    public void testeRetornarStatus400_QuandoCadastrarSemTaxa() {
         given()
                 .body(jsonRestauranteSemTaxa)
                 .contentType(ContentType.JSON)
@@ -133,7 +133,7 @@ public class RestauranteIntegrationIT {
     }
 
     @Test
-    public void testeRetornarStatus400_QuandoCadastrarCozinhaInexistente(){
+    public void testeRetornarStatus400_QuandoCadastrarCozinhaInexistente() {
         given()
                 .body(jsonRestauranteComCozinhaInexistente)
                 .contentType(ContentType.JSON)
@@ -146,7 +146,7 @@ public class RestauranteIntegrationIT {
 
 
     @Test
-    public void deveRetornarStatus200_QuandoConsultarRestaurantes(){
+    public void deveRetornarStatus200_QuandoConsultarRestaurantes() {
         given()
                 .accept(ContentType.JSON)
                 .when()
@@ -156,7 +156,7 @@ public class RestauranteIntegrationIT {
     }
 
     @Test
-    public void deveRetornarRespostaEStatusCorreto_QuandoConsutarRestauranteExistente(){
+    public void deveRetornarRespostaEStatusCorreto_QuandoConsutarRestauranteExistente() {
         given()
                 .pathParam("restauranteId", restauranteAlemao.getId())
                 .accept(ContentType.JSON)
@@ -167,8 +167,8 @@ public class RestauranteIntegrationIT {
                 .body("nome", equalTo(restauranteAlemao.getNome()));
     }
 
-      @Test
-      public void deveRetornarStatus404_QuandoConsultarCozinhaInexistente(){
+    @Test
+    public void deveRetornarStatus404_QuandoConsultarCozinhaInexistente() {
         given()
                 .pathParam("restauranteId", RESTAURANTE_ID_INEXISTENTE)
                 .accept(ContentType.JSON)
@@ -176,8 +176,23 @@ public class RestauranteIntegrationIT {
                 .get("/{restauranteId}")
                 .then()
                 .statusCode(HttpStatus.NOT_FOUND.value());
-      }
-    private void prepararDados(){
+    }
+
+    //construir teste do consulta e do cadastro de restaurante
+    @Test
+    public void retornar200QuandoBuscarRestaurante (){
+
+        given()
+                .pathParams("restauranteId", restauranteAlemao.getId())
+                .accept(ContentType.JSON)
+                .when()
+                .get("/{restauranteId}")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("nome", equalTo(restauranteAlemao.getNome()));
+    }
+
+    private void prepararDados() {
         cozinhaAmericana = new Cozinha();
         cozinhaAmericana.setNome("Americana");
         cozinhaRepository.save(cozinhaAmericana);
