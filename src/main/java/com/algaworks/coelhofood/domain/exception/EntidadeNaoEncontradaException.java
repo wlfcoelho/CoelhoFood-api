@@ -1,6 +1,6 @@
 package com.algaworks.coelhofood.domain.exception;
 
-public class EntidadeNaoEncontradaException extends Exception {
+public abstract class EntidadeNaoEncontradaException extends NegocioException {
 
 	private static final long serialVersionUID = 1L;
 
