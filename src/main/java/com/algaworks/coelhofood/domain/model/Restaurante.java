@@ -2,9 +2,7 @@ package com.algaworks.coelhofood.domain.model;
 
 import com.algaworks.coelhofood.core.validation.Groups;
 import com.algaworks.coelhofood.core.validation.Multiplo;
-import com.algaworks.coelhofood.core.validation.TaxaFrete;
 import com.algaworks.coelhofood.core.validation.ValorZeroIncluiDescricao;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CreationTimestamp;
@@ -62,25 +60,20 @@ public class Restaurante {
 	@Valid
 	private Cozinha cozinha;
 
-    @JsonIgnore
     @Embedded
     private Endereço endereço;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "restaurante")
     private List<Produto> produtos = new ArrayList<>();
 
-    @JsonIgnore
     @CreationTimestamp
     @Column(nullable = false, columnDefinition = "datetime")
     private LocalDateTime dataCadastro;
 
-    @JsonIgnore
     @UpdateTimestamp
     @Column(nullable = false, columnDefinition = "datetime")
     private LocalDateTime dataAtualizacao;
 
-    @JsonIgnore
     @ManyToMany
     @JoinTable(name = "restaurante_forma_pagamento",
             joinColumns = @JoinColumn(name = "restaurante_id"),
