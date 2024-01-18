@@ -2,15 +2,14 @@ package com.algaworks.coelhofood.domain.service;
 
 import com.algaworks.coelhofood.domain.exception.CidadeNaoEncontradoException;
 import com.algaworks.coelhofood.domain.exception.CozinhaNaoEncontradaException;
+import com.algaworks.coelhofood.domain.exception.EntidadeEmUsoException;
+import com.algaworks.coelhofood.domain.model.Cozinha;
+import com.algaworks.coelhofood.domain.repository.CozinhaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-
-import com.algaworks.coelhofood.domain.exception.EntidadeEmUsoException;
-import com.algaworks.coelhofood.domain.exception.EntidadeNaoEncontradaException;
-import com.algaworks.coelhofood.domain.model.Cozinha;
-import com.algaworks.coelhofood.domain.repository.CozinhaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CadastroCozinhaService {
@@ -19,12 +18,14 @@ public class CadastroCozinhaService {
 			= "Cozinha de código %d não pode ser removida, pois está em uso";
 	@Autowired
 	private CozinhaRepository cozinhaRepository;
-	
+
+	@Transactional
 	public Cozinha salvar (Cozinha cozinha) {
 
 		return cozinhaRepository.save(cozinha);
 	}
-	
+
+	@Transactional
 	public void excluir (Long cozinhaId) {
 		try {
 			cozinhaRepository.deleteById(cozinhaId);

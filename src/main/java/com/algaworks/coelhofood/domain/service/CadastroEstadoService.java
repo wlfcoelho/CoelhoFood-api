@@ -10,6 +10,7 @@ import com.algaworks.coelhofood.domain.exception.EntidadeEmUsoException;
 import com.algaworks.coelhofood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.coelhofood.domain.model.Estado;
 import com.algaworks.coelhofood.domain.repository.EstadoRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CadastroEstadoService {
@@ -19,10 +20,12 @@ public class CadastroEstadoService {
     @Autowired
     private EstadoRepository estadoRepository;
 
+    @Transactional
     public Estado salvar(Estado estado) {
         return estadoRepository.save(estado);
     }
 
+    @Transactional
     public void excluir(Long estadoId) throws EntidadeEmUsoException, EntidadeNaoEncontradaException {
         try {
             estadoRepository.deleteById(estadoId);
